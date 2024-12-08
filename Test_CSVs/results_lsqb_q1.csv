@@ -1,0 +1,157 @@
+,td_name,runtime,cost,cost_ideal,decomp,rewriting
+0,TD0,4.693704292178154,80532577.79493742,4836045,"Bag: [3, 7, 10, 11] Cover: (E6(10,11), E4(10,7), E1(3,7))Total Cost: 80532577.79493742 NodeCost: 78805291.0978245 ScanCost: 73216448.24926804  SubTree Costs:1727286.6971129186
+ 	Bag: [3] Cover: (E3(3),)Total Cost: 1 NodeCost: 1 ScanCost: 0  SubTree Costs:0
+ 		
+ 	Bag: [3, 9, 11] Cover: (E5(9,11), E2(3,9))Total Cost: 900142.8485564593 NodeCost: 900142.8485564593 ScanCost: 0  SubTree Costs:0
+ 		","CREATE OR REPLACE VIEW E4 AS SELECT person.personid AS E4_personid,person.islocatedin_cityid AS E4_islocatedin_cityid
+FROM person AS person;
+CREATE OR REPLACE VIEW E2 AS SELECT city.cityid AS E2_cityid,city.ispartof_countryid AS E2_ispartof_countryid
+FROM city AS city;
+CREATE OR REPLACE VIEW E3 AS SELECT city.ispartof_countryid AS E3_ispartof_countryid
+FROM city AS city;
+CREATE OR REPLACE VIEW E5 AS SELECT person.personid AS E5_personid,person.islocatedin_cityid AS E5_islocatedin_cityid
+FROM person AS person;
+CREATE OR REPLACE VIEW E1 AS SELECT city.cityid AS E1_cityid,city.ispartof_countryid AS E1_ispartof_countryid
+FROM city AS city;
+CREATE OR REPLACE VIEW E6 AS SELECT person_knows_person.person1id AS E6_person1id,person_knows_person.person2id AS E6_person2id
+FROM person_knows_person AS person_knows_person;
+CREATE OR REPLACE VIEW E1E4E6 AS SELECT E6_person1id, E6_person2id, E4_islocatedin_cityid, E1_ispartof_countryid FROM E6, E4, E1 WHERE E6_person1id = E4_personid AND E4_islocatedin_cityid = E1_cityid;
+CREATE OR REPLACE VIEW E2E5 AS SELECT E5_personid, E5_islocatedin_cityid, E2_ispartof_countryid FROM E5, E2 WHERE E5_islocatedin_cityid = E2_cityid;
+CREATE UNLOGGED TABLE E1E4E6_stage1_1 AS SELECT * FROM E1E4E6 WHERE EXISTS (SELECT 1 FROM E3 WHERE E1E4E6.E1_ispartof_countryid=E3.E3_ispartof_countryid);
+CREATE UNLOGGED TABLE E2E5_stage1_final AS SELECT * FROM E2E5 WHERE EXISTS (SELECT 1 FROM E3 WHERE E2E5.E2_ispartof_countryid=E3.E3_ispartof_countryid);
+CREATE UNLOGGED TABLE E1E4E6_stage1_2 AS SELECT * FROM E1E4E6_stage1_1 WHERE EXISTS (SELECT 1 FROM E2E5_stage1_final WHERE E1E4E6_stage1_1.E6_person2id=E2E5_stage1_final.E5_personid AND E1E4E6_stage1_1.E1_ispartof_countryid=E2E5_stage1_final.E2_ispartof_countryid);
+CREATE UNLOGGED TABLE E1E4E6_stage1_final AS SELECT MIN(E6_person1id) AS EXPR$0 FROM E1E4E6_stage1_2 WHERE EXISTS (SELECT 1 FROM E3 WHERE E1E4E6_stage1_2.E1_ispartof_countryid=E3.E3_ispartof_countryid);
+SELECT * FROM E1E4E6_stage1_final"
+1,TD1,4.685304455459118,80532577.79493742,4836045,"Bag: [3, 9, 10, 11] Cover: (E5(9,11), E6(10,11), E2(3,9))Total Cost: 80532577.79493742 NodeCost: 78805291.0978245 ScanCost: 73216448.24926804  SubTree Costs:1727286.6971129186
+ 	Bag: [3] Cover: (E3(3),)Total Cost: 1 NodeCost: 1 ScanCost: 0  SubTree Costs:0
+ 		
+ 	Bag: [3, 7, 10] Cover: (E4(10,7), E1(3,7))Total Cost: 900142.8485564593 NodeCost: 900142.8485564593 ScanCost: 0  SubTree Costs:0
+ 		","CREATE OR REPLACE VIEW E4 AS SELECT person.personid AS E4_personid,person.islocatedin_cityid AS E4_islocatedin_cityid
+FROM person AS person;
+CREATE OR REPLACE VIEW E2 AS SELECT city.cityid AS E2_cityid,city.ispartof_countryid AS E2_ispartof_countryid
+FROM city AS city;
+CREATE OR REPLACE VIEW E3 AS SELECT city.ispartof_countryid AS E3_ispartof_countryid
+FROM city AS city;
+CREATE OR REPLACE VIEW E5 AS SELECT person.personid AS E5_personid,person.islocatedin_cityid AS E5_islocatedin_cityid
+FROM person AS person;
+CREATE OR REPLACE VIEW E1 AS SELECT city.cityid AS E1_cityid,city.ispartof_countryid AS E1_ispartof_countryid
+FROM city AS city;
+CREATE OR REPLACE VIEW E6 AS SELECT person_knows_person.person1id AS E6_person1id,person_knows_person.person2id AS E6_person2id
+FROM person_knows_person AS person_knows_person;
+CREATE OR REPLACE VIEW E2E5E6 AS SELECT E5_personid, E5_islocatedin_cityid, E6_person1id, E2_ispartof_countryid FROM E5, E6, E2 WHERE E5_personid = E6_person2id AND E5_islocatedin_cityid = E2_cityid;
+CREATE OR REPLACE VIEW E1E4 AS SELECT E4_personid, E4_islocatedin_cityid, E1_ispartof_countryid FROM E4, E1 WHERE E4_islocatedin_cityid = E1_cityid;
+CREATE UNLOGGED TABLE E2E5E6_stage1_1 AS SELECT * FROM E2E5E6 WHERE EXISTS (SELECT 1 FROM E3 WHERE E2E5E6.E2_ispartof_countryid=E3.E3_ispartof_countryid);
+CREATE UNLOGGED TABLE E1E4_stage1_final AS SELECT * FROM E1E4 WHERE EXISTS (SELECT 1 FROM E3 WHERE E1E4.E1_ispartof_countryid=E3.E3_ispartof_countryid);
+CREATE UNLOGGED TABLE E2E5E6_stage1_2 AS SELECT * FROM E2E5E6_stage1_1 WHERE EXISTS (SELECT 1 FROM E1E4_stage1_final WHERE E2E5E6_stage1_1.E6_person1id=E1E4_stage1_final.E4_personid AND E2E5E6_stage1_1.E2_ispartof_countryid=E1E4_stage1_final.E1_ispartof_countryid);
+CREATE UNLOGGED TABLE E2E5E6_stage1_final AS SELECT MIN(E6_person1id) AS EXPR$0 FROM E2E5E6_stage1_2 WHERE EXISTS (SELECT 1 FROM E3 WHERE E2E5E6_stage1_2.E2_ispartof_countryid=E3.E3_ispartof_countryid);
+SELECT * FROM E2E5E6_stage1_final"
+2,TD2,33.60453755222261,80885929.55095415,4862492,"Bag: [7, 9, 10, 11] Cover: (E5(9,11), E6(10,11), E4(10,7))Total Cost: 82030303.9815404 NodeCost: 79613087.5984071 ScanCost: 73216448.24926804  SubTree Costs:2417216.3831332983
+ 	Bag: [3, 7, 9] Cover: (E2(3,9), E1(3,7))Total Cost: 128467.52196079212 NodeCost: 118793.34797386141 ScanCost: 1144374.430586253  SubTree Costs:9674.173986930708
+ 		Bag: [3] Cover: (E3(3),)Total Cost: 1 NodeCost: 1 ScanCost: 0  SubTree Costs:0
+ 			","CREATE OR REPLACE VIEW E4 AS SELECT person.personid AS E4_personid,person.islocatedin_cityid AS E4_islocatedin_cityid
+FROM person AS person;
+CREATE OR REPLACE VIEW E2 AS SELECT city.cityid AS E2_cityid,city.ispartof_countryid AS E2_ispartof_countryid
+FROM city AS city;
+CREATE OR REPLACE VIEW E3 AS SELECT city.ispartof_countryid AS E3_ispartof_countryid
+FROM city AS city;
+CREATE OR REPLACE VIEW E5 AS SELECT person.personid AS E5_personid,person.islocatedin_cityid AS E5_islocatedin_cityid
+FROM person AS person;
+CREATE OR REPLACE VIEW E1 AS SELECT city.cityid AS E1_cityid,city.ispartof_countryid AS E1_ispartof_countryid
+FROM city AS city;
+CREATE OR REPLACE VIEW E6 AS SELECT person_knows_person.person1id AS E6_person1id,person_knows_person.person2id AS E6_person2id
+FROM person_knows_person AS person_knows_person;
+CREATE OR REPLACE VIEW E4E5E6 AS SELECT E5_personid, E5_islocatedin_cityid, E6_person1id, E4_islocatedin_cityid FROM E5, E6, E4 WHERE E5_personid = E6_person2id AND E6_person1id = E4_personid;
+CREATE OR REPLACE VIEW E1E2 AS SELECT E2_cityid, E2_ispartof_countryid, E1_cityid FROM E2, E1 WHERE E2_ispartof_countryid = E1_ispartof_countryid;
+CREATE UNLOGGED TABLE E1E2_stage1_1 AS SELECT * FROM E1E2 WHERE EXISTS (SELECT 1 FROM E3 WHERE E1E2.E2_ispartof_countryid=E3.E3_ispartof_countryid);
+CREATE UNLOGGED TABLE E1E2_stage1_final AS SELECT * FROM E1E2_stage1_1 WHERE EXISTS (SELECT 1 FROM E3 WHERE E1E2_stage1_1.E2_ispartof_countryid=E3.E3_ispartof_countryid);
+CREATE UNLOGGED TABLE E4E5E6_stage1_final AS SELECT MIN(E6_person1id) AS EXPR$0 FROM E4E5E6 WHERE EXISTS (SELECT 1 FROM E1E2_stage1_final WHERE E4E5E6.E5_islocatedin_cityid=E1E2_stage1_final.E2_cityid AND E4E5E6.E4_islocatedin_cityid=E1E2_stage1_final.E1_cityid);
+SELECT * FROM E4E5E6_stage1_final"
+3,TD3,31.32023308891803,80885929.55095415,4862492,"Bag: [7, 9, 10, 11] Cover: (E5(9,11), E6(10,11), E4(10,7))Total Cost: 82030303.9815404 NodeCost: 79613087.5984071 ScanCost: 73216448.24926804  SubTree Costs:2417216.3831332983
+ 	Bag: [3, 7, 9] Cover: (E2(3,9), E1(3,7))Total Cost: 128467.52196079212 NodeCost: 118793.34797386141 ScanCost: 1144374.430586253  SubTree Costs:9674.173986930708
+ 		Bag: [3] Cover: (E3(3),)Total Cost: 1 NodeCost: 1 ScanCost: 0  SubTree Costs:0
+ 			","CREATE OR REPLACE VIEW E4 AS SELECT person.personid AS E4_personid,person.islocatedin_cityid AS E4_islocatedin_cityid
+FROM person AS person;
+CREATE OR REPLACE VIEW E2 AS SELECT city.cityid AS E2_cityid,city.ispartof_countryid AS E2_ispartof_countryid
+FROM city AS city;
+CREATE OR REPLACE VIEW E3 AS SELECT city.ispartof_countryid AS E3_ispartof_countryid
+FROM city AS city;
+CREATE OR REPLACE VIEW E5 AS SELECT person.personid AS E5_personid,person.islocatedin_cityid AS E5_islocatedin_cityid
+FROM person AS person;
+CREATE OR REPLACE VIEW E1 AS SELECT city.cityid AS E1_cityid,city.ispartof_countryid AS E1_ispartof_countryid
+FROM city AS city;
+CREATE OR REPLACE VIEW E6 AS SELECT person_knows_person.person1id AS E6_person1id,person_knows_person.person2id AS E6_person2id
+FROM person_knows_person AS person_knows_person;
+CREATE OR REPLACE VIEW E4E5E6 AS SELECT E5_personid, E5_islocatedin_cityid, E6_person1id, E4_islocatedin_cityid FROM E5, E6, E4 WHERE E5_personid = E6_person2id AND E6_person1id = E4_personid;
+CREATE OR REPLACE VIEW E1E2 AS SELECT E2_cityid, E2_ispartof_countryid, E1_cityid FROM E2, E1 WHERE E2_ispartof_countryid = E1_ispartof_countryid;
+CREATE UNLOGGED TABLE E1E2_stage1_1 AS SELECT * FROM E1E2 WHERE EXISTS (SELECT 1 FROM E3 WHERE E1E2.E2_ispartof_countryid=E3.E3_ispartof_countryid);
+CREATE UNLOGGED TABLE E1E2_stage1_final AS SELECT * FROM E1E2_stage1_1 WHERE EXISTS (SELECT 1 FROM E3 WHERE E1E2_stage1_1.E2_ispartof_countryid=E3.E3_ispartof_countryid);
+CREATE UNLOGGED TABLE E4E5E6_stage1_final AS SELECT MIN(E6_person1id) AS EXPR$0 FROM E4E5E6 WHERE EXISTS (SELECT 1 FROM E1E2_stage1_final WHERE E4E5E6.E5_islocatedin_cityid=E1E2_stage1_final.E2_cityid AND E4E5E6.E4_islocatedin_cityid=E1E2_stage1_final.E1_cityid);
+SELECT * FROM E4E5E6_stage1_final"
+4,TD4,3.4214572347700596,152931556.36963594,4836045,"Bag: [3, 9, 11] Cover: (E5(9,11), E2(3,9))Total Cost: 152931556.36963594 NodeCost: 900142.8485564593 ScanCost: 817469.6745695285  SubTree Costs:152031413.52107948
+ 	Bag: [3] Cover: (E3(3),)Total Cost: 1 NodeCost: 1 ScanCost: 0  SubTree Costs:0
+ 		
+ 	Bag: [3, 7, 10, 11] Cover: (E6(10,11), E4(10,7), E1(3,7))Total Cost: 78805291.0978245 NodeCost: 78805291.0978245 ScanCost: 0  SubTree Costs:0
+ 		","CREATE OR REPLACE VIEW E4 AS SELECT person.personid AS E4_personid,person.islocatedin_cityid AS E4_islocatedin_cityid
+FROM person AS person;
+CREATE OR REPLACE VIEW E2 AS SELECT city.cityid AS E2_cityid,city.ispartof_countryid AS E2_ispartof_countryid
+FROM city AS city;
+CREATE OR REPLACE VIEW E3 AS SELECT city.ispartof_countryid AS E3_ispartof_countryid
+FROM city AS city;
+CREATE OR REPLACE VIEW E5 AS SELECT person.personid AS E5_personid,person.islocatedin_cityid AS E5_islocatedin_cityid
+FROM person AS person;
+CREATE OR REPLACE VIEW E1 AS SELECT city.cityid AS E1_cityid,city.ispartof_countryid AS E1_ispartof_countryid
+FROM city AS city;
+CREATE OR REPLACE VIEW E6 AS SELECT person_knows_person.person1id AS E6_person1id,person_knows_person.person2id AS E6_person2id
+FROM person_knows_person AS person_knows_person;
+CREATE OR REPLACE VIEW E1E4E6 AS SELECT E6_person1id, E6_person2id, E4_islocatedin_cityid, E1_ispartof_countryid FROM E6, E4, E1 WHERE E6_person1id = E4_personid AND E4_islocatedin_cityid = E1_cityid;
+CREATE OR REPLACE VIEW E2E5 AS SELECT E5_personid, E5_islocatedin_cityid, E2_ispartof_countryid FROM E5, E2 WHERE E5_islocatedin_cityid = E2_cityid;
+CREATE UNLOGGED TABLE E1E4E6_stage1_1 AS SELECT * FROM E1E4E6 WHERE EXISTS (SELECT 1 FROM E3 WHERE E1E4E6.E1_ispartof_countryid=E3.E3_ispartof_countryid);
+CREATE UNLOGGED TABLE E2E5_stage1_1 AS SELECT * FROM E2E5 WHERE EXISTS (SELECT 1 FROM E3 WHERE E2E5.E2_ispartof_countryid=E3.E3_ispartof_countryid);
+CREATE UNLOGGED TABLE E2E5_stage1_final AS SELECT * FROM E2E5_stage1_1 WHERE EXISTS (SELECT 1 FROM E3 WHERE E2E5_stage1_1.E2_ispartof_countryid=E3.E3_ispartof_countryid);
+CREATE UNLOGGED TABLE E1E4E6_stage1_final AS SELECT MIN(E6_person1id) AS EXPR$0 FROM E1E4E6_stage1_1 WHERE EXISTS (SELECT 1 FROM E2E5_stage1_final WHERE E1E4E6_stage1_1.E6_person2id=E2E5_stage1_final.E5_personid AND E1E4E6_stage1_1.E1_ispartof_countryid=E2E5_stage1_final.E2_ispartof_countryid);
+SELECT * FROM E1E4E6_stage1_final"
+5,TD5,5.143231336027384,152931556.36963594,4836045,"Bag: [3, 7, 10] Cover: (E4(10,7), E1(3,7))Total Cost: 152931556.36963594 NodeCost: 900142.8485564593 ScanCost: 817469.6745695285  SubTree Costs:152031413.52107948
+ 	Bag: [3] Cover: (E3(3),)Total Cost: 1 NodeCost: 1 ScanCost: 0  SubTree Costs:0
+ 		
+ 	Bag: [3, 9, 10, 11] Cover: (E5(9,11), E6(10,11), E2(3,9))Total Cost: 78805291.0978245 NodeCost: 78805291.0978245 ScanCost: 0  SubTree Costs:0
+ 		","CREATE OR REPLACE VIEW E4 AS SELECT person.personid AS E4_personid,person.islocatedin_cityid AS E4_islocatedin_cityid
+FROM person AS person;
+CREATE OR REPLACE VIEW E2 AS SELECT city.cityid AS E2_cityid,city.ispartof_countryid AS E2_ispartof_countryid
+FROM city AS city;
+CREATE OR REPLACE VIEW E3 AS SELECT city.ispartof_countryid AS E3_ispartof_countryid
+FROM city AS city;
+CREATE OR REPLACE VIEW E5 AS SELECT person.personid AS E5_personid,person.islocatedin_cityid AS E5_islocatedin_cityid
+FROM person AS person;
+CREATE OR REPLACE VIEW E1 AS SELECT city.cityid AS E1_cityid,city.ispartof_countryid AS E1_ispartof_countryid
+FROM city AS city;
+CREATE OR REPLACE VIEW E6 AS SELECT person_knows_person.person1id AS E6_person1id,person_knows_person.person2id AS E6_person2id
+FROM person_knows_person AS person_knows_person;
+CREATE OR REPLACE VIEW E1E4 AS SELECT E4_personid, E4_islocatedin_cityid, E1_ispartof_countryid FROM E4, E1 WHERE E4_islocatedin_cityid = E1_cityid;
+CREATE OR REPLACE VIEW E2E5E6 AS SELECT E5_personid, E5_islocatedin_cityid, E6_person1id, E2_ispartof_countryid FROM E5, E6, E2 WHERE E5_personid = E6_person2id AND E5_islocatedin_cityid = E2_cityid;
+CREATE UNLOGGED TABLE E1E4_stage1_1 AS SELECT * FROM E1E4 WHERE EXISTS (SELECT 1 FROM E3 WHERE E1E4.E1_ispartof_countryid=E3.E3_ispartof_countryid);
+CREATE UNLOGGED TABLE E2E5E6_stage1_final AS SELECT * FROM E2E5E6 WHERE EXISTS (SELECT 1 FROM E3 WHERE E2E5E6.E2_ispartof_countryid=E3.E3_ispartof_countryid);
+CREATE UNLOGGED TABLE E1E4_stage1_2 AS SELECT * FROM E1E4_stage1_1 WHERE EXISTS (SELECT 1 FROM E2E5E6_stage1_final WHERE E1E4_stage1_1.E4_personid=E2E5E6_stage1_final.E6_person1id AND E1E4_stage1_1.E1_ispartof_countryid=E2E5E6_stage1_final.E2_ispartof_countryid);
+CREATE UNLOGGED TABLE E1E4_stage1_final AS SELECT MIN(E4_personid) AS EXPR$0 FROM E1E4_stage1_2 WHERE EXISTS (SELECT 1 FROM E3 WHERE E1E4_stage1_2.E1_ispartof_countryid=E3.E3_ispartof_countryid);
+SELECT * FROM E1E4_stage1_final"
+6,TD6,30.783642195165157,152958003.3696359,4862492,"Bag: [3, 7, 9] Cover: (E2(3,9), E1(3,7))Total Cost: 152958003.3696359 NodeCost: 118793.34797386141 ScanCost: 1144374.430586253  SubTree Costs:152839210.02166206
+ 	Bag: [3] Cover: (E3(3),)Total Cost: 1 NodeCost: 1 ScanCost: 0  SubTree Costs:0
+ 		
+ 	Bag: [7, 9, 10, 11] Cover: (E5(9,11), E6(10,11), E4(10,7))Total Cost: 79613087.5984071 NodeCost: 79613087.5984071 ScanCost: 0  SubTree Costs:0
+ 		","CREATE OR REPLACE VIEW E4 AS SELECT person.personid AS E4_personid,person.islocatedin_cityid AS E4_islocatedin_cityid
+FROM person AS person;
+CREATE OR REPLACE VIEW E2 AS SELECT city.cityid AS E2_cityid,city.ispartof_countryid AS E2_ispartof_countryid
+FROM city AS city;
+CREATE OR REPLACE VIEW E3 AS SELECT city.ispartof_countryid AS E3_ispartof_countryid
+FROM city AS city;
+CREATE OR REPLACE VIEW E5 AS SELECT person.personid AS E5_personid,person.islocatedin_cityid AS E5_islocatedin_cityid
+FROM person AS person;
+CREATE OR REPLACE VIEW E1 AS SELECT city.cityid AS E1_cityid,city.ispartof_countryid AS E1_ispartof_countryid
+FROM city AS city;
+CREATE OR REPLACE VIEW E6 AS SELECT person_knows_person.person1id AS E6_person1id,person_knows_person.person2id AS E6_person2id
+FROM person_knows_person AS person_knows_person;
+CREATE OR REPLACE VIEW E4E5E6 AS SELECT E5_personid, E5_islocatedin_cityid, E6_person1id, E4_islocatedin_cityid FROM E5, E6, E4 WHERE E5_personid = E6_person2id AND E6_person1id = E4_personid;
+CREATE OR REPLACE VIEW E1E2 AS SELECT E2_cityid, E2_ispartof_countryid, E1_cityid FROM E2, E1 WHERE E2_ispartof_countryid = E1_ispartof_countryid;
+CREATE UNLOGGED TABLE E1E2_stage1_1 AS SELECT * FROM E1E2 WHERE EXISTS (SELECT 1 FROM E3 WHERE E1E2.E2_ispartof_countryid=E3.E3_ispartof_countryid);
+CREATE UNLOGGED TABLE E1E2_stage1_final AS SELECT * FROM E1E2_stage1_1 WHERE EXISTS (SELECT 1 FROM E3 WHERE E1E2_stage1_1.E2_ispartof_countryid=E3.E3_ispartof_countryid);
+CREATE UNLOGGED TABLE E4E5E6_stage1_final AS SELECT MIN(E6_person1id) AS EXPR$0 FROM E4E5E6 WHERE EXISTS (SELECT 1 FROM E1E2_stage1_final WHERE E4E5E6.E5_islocatedin_cityid=E1E2_stage1_final.E2_cityid AND E4E5E6.E4_islocatedin_cityid=E1E2_stage1_final.E1_cityid);
+SELECT * FROM E4E5E6_stage1_final"

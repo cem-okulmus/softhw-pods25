@@ -1,0 +1,184 @@
+,td_name,runtime,cost,cost_ideal,decomp,rewriting
+0,TD0,2.238645208068192,389353016.7122687,49790256,"Bag: [4, 38, 79] Cover: (E4(38,79), E2(38,4))Total Cost: 389353016.7122687 NodeCost: 272601494.6869609 ScanCost: 0  SubTree Costs:116751522.02530783
+ 	Bag: [4, 79, 102] Cover: (E1(102,4), E5(102,79))Total Cost: 113644216.97609673 NodeCost: 113644216.97609673 ScanCost: 0  SubTree Costs:0
+ 		
+ 	Bag: [38] Cover: (E3(38),)Total Cost: 1 NodeCost: 1 ScanCost: 0  SubTree Costs:0
+ 		","CREATE OR REPLACE VIEW E5 AS SELECT warehouse.w_warehouse_sk AS E5_w_warehouse_sk,warehouse.w_warehouse_sq_ft AS E5_w_warehouse_sq_ft
+FROM warehouse AS warehouse;
+CREATE OR REPLACE VIEW E2 AS SELECT customer.c_customer_sk AS E2_c_customer_sk,customer.c_current_addr_sk AS E2_c_current_addr_sk
+FROM customer AS customer;
+CREATE OR REPLACE VIEW E4 AS SELECT catalog_sales.cs_bill_addr_sk AS E4_cs_bill_addr_sk,catalog_sales.cs_warehouse_sk AS E4_cs_warehouse_sk
+FROM catalog_sales AS catalog_sales;
+CREATE OR REPLACE VIEW E1 AS SELECT web_sales.ws_bill_customer_sk AS E1_ws_bill_customer_sk,web_sales.ws_quantity AS E1_ws_quantity
+FROM web_sales AS web_sales;
+CREATE OR REPLACE VIEW E3 AS SELECT customer_address.ca_address_sk AS E3_ca_address_sk
+FROM customer_address AS customer_address;
+CREATE OR REPLACE VIEW E2E4 AS SELECT E4_cs_bill_addr_sk, E4_cs_warehouse_sk, E2_c_customer_sk FROM E4, E2 WHERE E4_cs_bill_addr_sk = E2_c_current_addr_sk;
+CREATE OR REPLACE VIEW E1E5 AS SELECT E1_ws_bill_customer_sk, E1_ws_quantity, E5_w_warehouse_sk FROM E1, E5 WHERE E1_ws_quantity = E5_w_warehouse_sq_ft;
+CREATE UNLOGGED TABLE E2E4_stage1_1 AS SELECT * FROM E2E4 WHERE EXISTS (SELECT 1 FROM E1E5 WHERE E2E4.E4_cs_warehouse_sk=E1E5.E5_w_warehouse_sk AND E2E4.E2_c_customer_sk=E1E5.E1_ws_bill_customer_sk);
+CREATE UNLOGGED TABLE E2E4_stage1_2 AS SELECT * FROM E2E4_stage1_1 WHERE EXISTS (SELECT 1 FROM E3 WHERE E2E4_stage1_1.E4_cs_bill_addr_sk=E3.E3_ca_address_sk);
+CREATE UNLOGGED TABLE E2E4_stage1_final AS SELECT MIN(E2_c_customer_sk) AS EXPR$0 FROM E2E4_stage1_2 WHERE EXISTS (SELECT 1 FROM E3 WHERE E2E4_stage1_2.E4_cs_bill_addr_sk=E3.E3_ca_address_sk);
+SELECT * FROM E2E4_stage1_final"
+1,TD1,1.8843582523986697,389353016.7122687,49790256,"Bag: [4, 38, 79] Cover: (E4(38,79), E2(38,4))Total Cost: 389353016.7122687 NodeCost: 272601494.6869609 ScanCost: 0  SubTree Costs:116751522.02530783
+ 	Bag: [4, 79, 102] Cover: (E1(102,4), E5(102,79))Total Cost: 113644216.97609673 NodeCost: 113644216.97609673 ScanCost: 0  SubTree Costs:0
+ 		
+ 	Bag: [38] Cover: (E3(38),)Total Cost: 1 NodeCost: 1 ScanCost: 0  SubTree Costs:0
+ 		","CREATE OR REPLACE VIEW E5 AS SELECT warehouse.w_warehouse_sk AS E5_w_warehouse_sk,warehouse.w_warehouse_sq_ft AS E5_w_warehouse_sq_ft
+FROM warehouse AS warehouse;
+CREATE OR REPLACE VIEW E2 AS SELECT customer.c_customer_sk AS E2_c_customer_sk,customer.c_current_addr_sk AS E2_c_current_addr_sk
+FROM customer AS customer;
+CREATE OR REPLACE VIEW E4 AS SELECT catalog_sales.cs_bill_addr_sk AS E4_cs_bill_addr_sk,catalog_sales.cs_warehouse_sk AS E4_cs_warehouse_sk
+FROM catalog_sales AS catalog_sales;
+CREATE OR REPLACE VIEW E1 AS SELECT web_sales.ws_bill_customer_sk AS E1_ws_bill_customer_sk,web_sales.ws_quantity AS E1_ws_quantity
+FROM web_sales AS web_sales;
+CREATE OR REPLACE VIEW E3 AS SELECT customer_address.ca_address_sk AS E3_ca_address_sk
+FROM customer_address AS customer_address;
+CREATE OR REPLACE VIEW E2E4 AS SELECT E4_cs_bill_addr_sk, E4_cs_warehouse_sk, E2_c_customer_sk FROM E4, E2 WHERE E4_cs_bill_addr_sk = E2_c_current_addr_sk;
+CREATE OR REPLACE VIEW E1E5 AS SELECT E1_ws_bill_customer_sk, E1_ws_quantity, E5_w_warehouse_sk FROM E1, E5 WHERE E1_ws_quantity = E5_w_warehouse_sq_ft;
+CREATE UNLOGGED TABLE E2E4_stage1_1 AS SELECT * FROM E2E4 WHERE EXISTS (SELECT 1 FROM E1E5 WHERE E2E4.E4_cs_warehouse_sk=E1E5.E5_w_warehouse_sk AND E2E4.E2_c_customer_sk=E1E5.E1_ws_bill_customer_sk);
+CREATE UNLOGGED TABLE E2E4_stage1_2 AS SELECT * FROM E2E4_stage1_1 WHERE EXISTS (SELECT 1 FROM E3 WHERE E2E4_stage1_1.E4_cs_bill_addr_sk=E3.E3_ca_address_sk);
+CREATE UNLOGGED TABLE E2E4_stage1_final AS SELECT MIN(E2_c_customer_sk) AS EXPR$0 FROM E2E4_stage1_2 WHERE EXISTS (SELECT 1 FROM E3 WHERE E2E4_stage1_2.E4_cs_bill_addr_sk=E3.E3_ca_address_sk);
+SELECT * FROM E2E4_stage1_final"
+2,TD2,2.7410016413778067,396414197.4009709,50040164,"Bag: [4, 38] Cover: (E3(38), E2(38,4))Total Cost: 396414197.4009709 NodeCost: 10168485.73791326 ScanCost: 0  SubTree Costs:386245711.6630576
+ 	Bag: [4, 38, 79] Cover: (E4(38,79), E2(38,4))Total Cost: 386245711.6630576 NodeCost: 272601494.6869609 ScanCost: 0  SubTree Costs:113644216.97609673
+ 		Bag: [4, 79, 102] Cover: (E1(102,4), E5(102,79))Total Cost: 113644216.97609673 NodeCost: 113644216.97609673 ScanCost: 0  SubTree Costs:0
+ 			","CREATE OR REPLACE VIEW E5 AS SELECT warehouse.w_warehouse_sk AS E5_w_warehouse_sk,warehouse.w_warehouse_sq_ft AS E5_w_warehouse_sq_ft
+FROM warehouse AS warehouse;
+CREATE OR REPLACE VIEW E2 AS SELECT customer.c_customer_sk AS E2_c_customer_sk,customer.c_current_addr_sk AS E2_c_current_addr_sk
+FROM customer AS customer;
+CREATE OR REPLACE VIEW E4 AS SELECT catalog_sales.cs_bill_addr_sk AS E4_cs_bill_addr_sk,catalog_sales.cs_warehouse_sk AS E4_cs_warehouse_sk
+FROM catalog_sales AS catalog_sales;
+CREATE OR REPLACE VIEW E1 AS SELECT web_sales.ws_bill_customer_sk AS E1_ws_bill_customer_sk,web_sales.ws_quantity AS E1_ws_quantity
+FROM web_sales AS web_sales;
+CREATE OR REPLACE VIEW E3 AS SELECT customer_address.ca_address_sk AS E3_ca_address_sk
+FROM customer_address AS customer_address;
+CREATE OR REPLACE VIEW E2E3 AS SELECT E3_ca_address_sk, E2_c_customer_sk FROM E3, E2 WHERE E3_ca_address_sk = E2_c_current_addr_sk;
+CREATE OR REPLACE VIEW E2E4 AS SELECT E4_cs_bill_addr_sk, E4_cs_warehouse_sk, E2_c_customer_sk FROM E4, E2 WHERE E4_cs_bill_addr_sk = E2_c_current_addr_sk;
+CREATE OR REPLACE VIEW E1E5 AS SELECT E1_ws_bill_customer_sk, E1_ws_quantity, E5_w_warehouse_sk FROM E1, E5 WHERE E1_ws_quantity = E5_w_warehouse_sq_ft;
+CREATE UNLOGGED TABLE E2E4_stage1_1 AS SELECT * FROM E2E4 WHERE EXISTS (SELECT 1 FROM E1E5 WHERE E2E4.E4_cs_warehouse_sk=E1E5.E5_w_warehouse_sk AND E2E4.E2_c_customer_sk=E1E5.E1_ws_bill_customer_sk);
+CREATE UNLOGGED TABLE E2E4_stage1_final AS SELECT * FROM E2E4_stage1_1 WHERE EXISTS (SELECT 1 FROM E3 WHERE E2E4_stage1_1.E4_cs_bill_addr_sk=E3.E3_ca_address_sk);
+CREATE UNLOGGED TABLE E2E3_stage1_final AS SELECT MIN(E2_c_customer_sk) AS EXPR$0 FROM E2E3 WHERE EXISTS (SELECT 1 FROM E2E4_stage1_final WHERE E2E3.E3_ca_address_sk=E2E4_stage1_final.E4_cs_bill_addr_sk AND E2E3.E2_c_customer_sk=E2E4_stage1_final.E2_c_customer_sk);
+SELECT * FROM E2E3_stage1_final"
+3,TD3,32.32393481116742,495826334.2597234,21778917,"Bag: [38, 79, 102] Cover: (E4(38,79), E5(102,79))Total Cost: 495826334.2597234 NodeCost: 251702989.02410963 ScanCost: 236118763.38607454  SubTree Costs:244123345.2356138
+ 	Bag: [38] Cover: (E3(38),)Total Cost: 1 NodeCost: 1 ScanCost: 0  SubTree Costs:0
+ 		
+ 	Bag: [4, 38, 102] Cover: (E1(102,4), E2(38,4))Total Cost: 127401193.63894796 NodeCost: 127401193.63894796 ScanCost: 0  SubTree Costs:0
+ 		","CREATE OR REPLACE VIEW E5 AS SELECT warehouse.w_warehouse_sk AS E5_w_warehouse_sk,warehouse.w_warehouse_sq_ft AS E5_w_warehouse_sq_ft
+FROM warehouse AS warehouse;
+CREATE OR REPLACE VIEW E2 AS SELECT customer.c_customer_sk AS E2_c_customer_sk,customer.c_current_addr_sk AS E2_c_current_addr_sk
+FROM customer AS customer;
+CREATE OR REPLACE VIEW E4 AS SELECT catalog_sales.cs_bill_addr_sk AS E4_cs_bill_addr_sk,catalog_sales.cs_warehouse_sk AS E4_cs_warehouse_sk
+FROM catalog_sales AS catalog_sales;
+CREATE OR REPLACE VIEW E1 AS SELECT web_sales.ws_bill_customer_sk AS E1_ws_bill_customer_sk,web_sales.ws_quantity AS E1_ws_quantity
+FROM web_sales AS web_sales;
+CREATE OR REPLACE VIEW E3 AS SELECT customer_address.ca_address_sk AS E3_ca_address_sk
+FROM customer_address AS customer_address;
+CREATE OR REPLACE VIEW E1E2 AS SELECT E1_ws_bill_customer_sk, E1_ws_quantity, E2_c_current_addr_sk FROM E1, E2 WHERE E1_ws_bill_customer_sk = E2_c_customer_sk;
+CREATE OR REPLACE VIEW E4E5 AS SELECT E4_cs_bill_addr_sk, E4_cs_warehouse_sk, E5_w_warehouse_sq_ft FROM E4, E5 WHERE E4_cs_warehouse_sk = E5_w_warehouse_sk;
+CREATE UNLOGGED TABLE E1E2_stage1_1 AS SELECT * FROM E1E2 WHERE EXISTS (SELECT 1 FROM E3 WHERE E1E2.E2_c_current_addr_sk=E3.E3_ca_address_sk);
+CREATE UNLOGGED TABLE E4E5_stage1_1 AS SELECT * FROM E4E5 WHERE EXISTS (SELECT 1 FROM E3 WHERE E4E5.E4_cs_bill_addr_sk=E3.E3_ca_address_sk);
+CREATE UNLOGGED TABLE E4E5_stage1_final AS SELECT * FROM E4E5_stage1_1 WHERE EXISTS (SELECT 1 FROM E3 WHERE E4E5_stage1_1.E4_cs_bill_addr_sk=E3.E3_ca_address_sk);
+CREATE UNLOGGED TABLE E1E2_stage1_final AS SELECT MIN(E1_ws_bill_customer_sk) AS EXPR$0 FROM E1E2_stage1_1 WHERE EXISTS (SELECT 1 FROM E4E5_stage1_final WHERE E1E2_stage1_1.E1_ws_quantity=E4E5_stage1_final.E5_w_warehouse_sq_ft AND E1E2_stage1_1.E2_c_current_addr_sk=E4E5_stage1_final.E4_cs_bill_addr_sk);
+SELECT * FROM E1E2_stage1_final"
+4,TD4,32.578312028199434,495826334.2597234,21778917,"Bag: [38, 79, 102] Cover: (E4(38,79), E5(102,79))Total Cost: 495826334.2597234 NodeCost: 251702989.02410963 ScanCost: 236118763.38607454  SubTree Costs:244123345.2356138
+ 	Bag: [38] Cover: (E3(38),)Total Cost: 1 NodeCost: 1 ScanCost: 0  SubTree Costs:0
+ 		
+ 	Bag: [4, 38, 102] Cover: (E1(102,4), E2(38,4))Total Cost: 127401193.63894796 NodeCost: 127401193.63894796 ScanCost: 0  SubTree Costs:0
+ 		","CREATE OR REPLACE VIEW E5 AS SELECT warehouse.w_warehouse_sk AS E5_w_warehouse_sk,warehouse.w_warehouse_sq_ft AS E5_w_warehouse_sq_ft
+FROM warehouse AS warehouse;
+CREATE OR REPLACE VIEW E2 AS SELECT customer.c_customer_sk AS E2_c_customer_sk,customer.c_current_addr_sk AS E2_c_current_addr_sk
+FROM customer AS customer;
+CREATE OR REPLACE VIEW E4 AS SELECT catalog_sales.cs_bill_addr_sk AS E4_cs_bill_addr_sk,catalog_sales.cs_warehouse_sk AS E4_cs_warehouse_sk
+FROM catalog_sales AS catalog_sales;
+CREATE OR REPLACE VIEW E1 AS SELECT web_sales.ws_bill_customer_sk AS E1_ws_bill_customer_sk,web_sales.ws_quantity AS E1_ws_quantity
+FROM web_sales AS web_sales;
+CREATE OR REPLACE VIEW E3 AS SELECT customer_address.ca_address_sk AS E3_ca_address_sk
+FROM customer_address AS customer_address;
+CREATE OR REPLACE VIEW E1E2 AS SELECT E1_ws_bill_customer_sk, E1_ws_quantity, E2_c_current_addr_sk FROM E1, E2 WHERE E1_ws_bill_customer_sk = E2_c_customer_sk;
+CREATE OR REPLACE VIEW E4E5 AS SELECT E4_cs_bill_addr_sk, E4_cs_warehouse_sk, E5_w_warehouse_sq_ft FROM E4, E5 WHERE E4_cs_warehouse_sk = E5_w_warehouse_sk;
+CREATE UNLOGGED TABLE E1E2_stage1_1 AS SELECT * FROM E1E2 WHERE EXISTS (SELECT 1 FROM E3 WHERE E1E2.E2_c_current_addr_sk=E3.E3_ca_address_sk);
+CREATE UNLOGGED TABLE E4E5_stage1_1 AS SELECT * FROM E4E5 WHERE EXISTS (SELECT 1 FROM E3 WHERE E4E5.E4_cs_bill_addr_sk=E3.E3_ca_address_sk);
+CREATE UNLOGGED TABLE E4E5_stage1_final AS SELECT * FROM E4E5_stage1_1 WHERE EXISTS (SELECT 1 FROM E3 WHERE E4E5_stage1_1.E4_cs_bill_addr_sk=E3.E3_ca_address_sk);
+CREATE UNLOGGED TABLE E1E2_stage1_final AS SELECT MIN(E1_ws_bill_customer_sk) AS EXPR$0 FROM E1E2_stage1_1 WHERE EXISTS (SELECT 1 FROM E4E5_stage1_final WHERE E1E2_stage1_1.E1_ws_quantity=E4E5_stage1_final.E5_w_warehouse_sq_ft AND E1E2_stage1_1.E2_c_current_addr_sk=E4E5_stage1_final.E4_cs_bill_addr_sk);
+SELECT * FROM E1E2_stage1_final"
+5,TD5,26.090439591556787,618330251.0983433,21778917,"Bag: [4, 38, 102] Cover: (E1(102,4), E2(38,4))Total Cost: 618330251.0983433 NodeCost: 127401193.63894796 ScanCost: 113614846.54745473  SubTree Costs:490929057.4593953
+ 	Bag: [38] Cover: (E3(38),)Total Cost: 1 NodeCost: 1 ScanCost: 0  SubTree Costs:0
+ 		
+ 	Bag: [38, 79, 102] Cover: (E4(38,79), E5(102,79))Total Cost: 251702989.02410963 NodeCost: 251702989.02410963 ScanCost: 0  SubTree Costs:0
+ 		","CREATE OR REPLACE VIEW E5 AS SELECT warehouse.w_warehouse_sk AS E5_w_warehouse_sk,warehouse.w_warehouse_sq_ft AS E5_w_warehouse_sq_ft
+FROM warehouse AS warehouse;
+CREATE OR REPLACE VIEW E2 AS SELECT customer.c_customer_sk AS E2_c_customer_sk,customer.c_current_addr_sk AS E2_c_current_addr_sk
+FROM customer AS customer;
+CREATE OR REPLACE VIEW E4 AS SELECT catalog_sales.cs_bill_addr_sk AS E4_cs_bill_addr_sk,catalog_sales.cs_warehouse_sk AS E4_cs_warehouse_sk
+FROM catalog_sales AS catalog_sales;
+CREATE OR REPLACE VIEW E1 AS SELECT web_sales.ws_bill_customer_sk AS E1_ws_bill_customer_sk,web_sales.ws_quantity AS E1_ws_quantity
+FROM web_sales AS web_sales;
+CREATE OR REPLACE VIEW E3 AS SELECT customer_address.ca_address_sk AS E3_ca_address_sk
+FROM customer_address AS customer_address;
+CREATE OR REPLACE VIEW E1E2 AS SELECT E1_ws_bill_customer_sk, E1_ws_quantity, E2_c_current_addr_sk FROM E1, E2 WHERE E1_ws_bill_customer_sk = E2_c_customer_sk;
+CREATE OR REPLACE VIEW E4E5 AS SELECT E4_cs_bill_addr_sk, E4_cs_warehouse_sk, E5_w_warehouse_sq_ft FROM E4, E5 WHERE E4_cs_warehouse_sk = E5_w_warehouse_sk;
+CREATE UNLOGGED TABLE E1E2_stage1_1 AS SELECT * FROM E1E2 WHERE EXISTS (SELECT 1 FROM E3 WHERE E1E2.E2_c_current_addr_sk=E3.E3_ca_address_sk);
+CREATE UNLOGGED TABLE E4E5_stage1_final AS SELECT * FROM E4E5 WHERE EXISTS (SELECT 1 FROM E3 WHERE E4E5.E4_cs_bill_addr_sk=E3.E3_ca_address_sk);
+CREATE UNLOGGED TABLE E1E2_stage1_2 AS SELECT * FROM E1E2_stage1_1 WHERE EXISTS (SELECT 1 FROM E4E5_stage1_final WHERE E1E2_stage1_1.E1_ws_quantity=E4E5_stage1_final.E5_w_warehouse_sq_ft AND E1E2_stage1_1.E2_c_current_addr_sk=E4E5_stage1_final.E4_cs_bill_addr_sk);
+CREATE UNLOGGED TABLE E1E2_stage1_final AS SELECT MIN(E1_ws_bill_customer_sk) AS EXPR$0 FROM E1E2_stage1_2 WHERE EXISTS (SELECT 1 FROM E3 WHERE E1E2_stage1_2.E2_c_current_addr_sk=E3.E3_ca_address_sk);
+SELECT * FROM E1E2_stage1_final"
+6,TD6,24.356938454322517,618330251.0983433,21778917,"Bag: [4, 38, 102] Cover: (E1(102,4), E2(38,4))Total Cost: 618330251.0983433 NodeCost: 127401193.63894796 ScanCost: 113614846.54745473  SubTree Costs:490929057.4593953
+ 	Bag: [38] Cover: (E3(38),)Total Cost: 1 NodeCost: 1 ScanCost: 0  SubTree Costs:0
+ 		
+ 	Bag: [38, 79, 102] Cover: (E4(38,79), E5(102,79))Total Cost: 251702989.02410963 NodeCost: 251702989.02410963 ScanCost: 0  SubTree Costs:0
+ 		","CREATE OR REPLACE VIEW E5 AS SELECT warehouse.w_warehouse_sk AS E5_w_warehouse_sk,warehouse.w_warehouse_sq_ft AS E5_w_warehouse_sq_ft
+FROM warehouse AS warehouse;
+CREATE OR REPLACE VIEW E2 AS SELECT customer.c_customer_sk AS E2_c_customer_sk,customer.c_current_addr_sk AS E2_c_current_addr_sk
+FROM customer AS customer;
+CREATE OR REPLACE VIEW E4 AS SELECT catalog_sales.cs_bill_addr_sk AS E4_cs_bill_addr_sk,catalog_sales.cs_warehouse_sk AS E4_cs_warehouse_sk
+FROM catalog_sales AS catalog_sales;
+CREATE OR REPLACE VIEW E1 AS SELECT web_sales.ws_bill_customer_sk AS E1_ws_bill_customer_sk,web_sales.ws_quantity AS E1_ws_quantity
+FROM web_sales AS web_sales;
+CREATE OR REPLACE VIEW E3 AS SELECT customer_address.ca_address_sk AS E3_ca_address_sk
+FROM customer_address AS customer_address;
+CREATE OR REPLACE VIEW E1E2 AS SELECT E1_ws_bill_customer_sk, E1_ws_quantity, E2_c_current_addr_sk FROM E1, E2 WHERE E1_ws_bill_customer_sk = E2_c_customer_sk;
+CREATE OR REPLACE VIEW E4E5 AS SELECT E4_cs_bill_addr_sk, E4_cs_warehouse_sk, E5_w_warehouse_sq_ft FROM E4, E5 WHERE E4_cs_warehouse_sk = E5_w_warehouse_sk;
+CREATE UNLOGGED TABLE E1E2_stage1_1 AS SELECT * FROM E1E2 WHERE EXISTS (SELECT 1 FROM E3 WHERE E1E2.E2_c_current_addr_sk=E3.E3_ca_address_sk);
+CREATE UNLOGGED TABLE E4E5_stage1_final AS SELECT * FROM E4E5 WHERE EXISTS (SELECT 1 FROM E3 WHERE E4E5.E4_cs_bill_addr_sk=E3.E3_ca_address_sk);
+CREATE UNLOGGED TABLE E1E2_stage1_2 AS SELECT * FROM E1E2_stage1_1 WHERE EXISTS (SELECT 1 FROM E4E5_stage1_final WHERE E1E2_stage1_1.E1_ws_quantity=E4E5_stage1_final.E5_w_warehouse_sq_ft AND E1E2_stage1_1.E2_c_current_addr_sk=E4E5_stage1_final.E4_cs_bill_addr_sk);
+CREATE UNLOGGED TABLE E1E2_stage1_final AS SELECT MIN(E1_ws_bill_customer_sk) AS EXPR$0 FROM E1E2_stage1_2 WHERE EXISTS (SELECT 1 FROM E3 WHERE E1E2_stage1_2.E2_c_current_addr_sk=E3.E3_ca_address_sk);
+SELECT * FROM E1E2_stage1_final"
+7,TD7,2.2076516011729836,641056297.7105274,63882372,"Bag: [38, 79] Cover: (E4(38,79), E3(38))Total Cost: 641056297.7105274 NodeCost: 254810586.0474698 ScanCost: 0  SubTree Costs:386245711.6630576
+ 	Bag: [4, 38, 79] Cover: (E4(38,79), E2(38,4))Total Cost: 386245711.6630576 NodeCost: 272601494.6869609 ScanCost: 0  SubTree Costs:113644216.97609673
+ 		Bag: [4, 79, 102] Cover: (E1(102,4), E5(102,79))Total Cost: 113644216.97609673 NodeCost: 113644216.97609673 ScanCost: 0  SubTree Costs:0
+ 			","CREATE OR REPLACE VIEW E5 AS SELECT warehouse.w_warehouse_sk AS E5_w_warehouse_sk,warehouse.w_warehouse_sq_ft AS E5_w_warehouse_sq_ft
+FROM warehouse AS warehouse;
+CREATE OR REPLACE VIEW E2 AS SELECT customer.c_customer_sk AS E2_c_customer_sk,customer.c_current_addr_sk AS E2_c_current_addr_sk
+FROM customer AS customer;
+CREATE OR REPLACE VIEW E4 AS SELECT catalog_sales.cs_bill_addr_sk AS E4_cs_bill_addr_sk,catalog_sales.cs_warehouse_sk AS E4_cs_warehouse_sk
+FROM catalog_sales AS catalog_sales;
+CREATE OR REPLACE VIEW E1 AS SELECT web_sales.ws_bill_customer_sk AS E1_ws_bill_customer_sk,web_sales.ws_quantity AS E1_ws_quantity
+FROM web_sales AS web_sales;
+CREATE OR REPLACE VIEW E3 AS SELECT customer_address.ca_address_sk AS E3_ca_address_sk
+FROM customer_address AS customer_address;
+CREATE OR REPLACE VIEW E2E4 AS SELECT E4_cs_bill_addr_sk, E4_cs_warehouse_sk, E2_c_customer_sk FROM E4, E2 WHERE E4_cs_bill_addr_sk = E2_c_current_addr_sk;
+CREATE OR REPLACE VIEW E1E5 AS SELECT E1_ws_bill_customer_sk, E1_ws_quantity, E5_w_warehouse_sk FROM E1, E5 WHERE E1_ws_quantity = E5_w_warehouse_sq_ft;
+CREATE OR REPLACE VIEW E3E4 AS SELECT E4_cs_bill_addr_sk, E4_cs_warehouse_sk FROM E4, E3 WHERE E4_cs_bill_addr_sk = E3_ca_address_sk;
+CREATE UNLOGGED TABLE E2E4_stage1_1 AS SELECT * FROM E2E4 WHERE EXISTS (SELECT 1 FROM E1E5 WHERE E2E4.E4_cs_warehouse_sk=E1E5.E5_w_warehouse_sk AND E2E4.E2_c_customer_sk=E1E5.E1_ws_bill_customer_sk);
+CREATE UNLOGGED TABLE E2E4_stage1_2 AS SELECT * FROM E2E4_stage1_1 WHERE EXISTS (SELECT 1 FROM E3 WHERE E2E4_stage1_1.E4_cs_bill_addr_sk=E3.E3_ca_address_sk);
+CREATE UNLOGGED TABLE E2E4_stage1_final AS SELECT MIN(E2_c_customer_sk) AS EXPR$0 FROM E2E4_stage1_2 WHERE EXISTS (SELECT 1 FROM E3E4 WHERE E2E4_stage1_2.E4_cs_bill_addr_sk=E3E4.E4_cs_bill_addr_sk AND E2E4_stage1_2.E4_cs_warehouse_sk=E3E4.E4_cs_warehouse_sk);
+SELECT * FROM E2E4_stage1_final"
+8,TD8,46.38645466044545,881598339.3906825,49790256,"Bag: [4, 79, 102] Cover: (E1(102,4), E5(102,79))Total Cost: 1373843662.069096 NodeCost: 113644216.97609673 ScanCost: 0  SubTree Costs:1260199445.0929995
+ 	Bag: [4, 38, 79] Cover: (E4(38,79), E2(38,4))Total Cost: 275708799.73617196 NodeCost: 272601494.6869609 ScanCost: 492245322.67841375  SubTree Costs:3107305.0492110956
+ 		Bag: [38] Cover: (E3(38),)Total Cost: 1 NodeCost: 1 ScanCost: 0  SubTree Costs:0
+ 			","CREATE OR REPLACE VIEW E5 AS SELECT warehouse.w_warehouse_sk AS E5_w_warehouse_sk,warehouse.w_warehouse_sq_ft AS E5_w_warehouse_sq_ft
+FROM warehouse AS warehouse;
+CREATE OR REPLACE VIEW E2 AS SELECT customer.c_customer_sk AS E2_c_customer_sk,customer.c_current_addr_sk AS E2_c_current_addr_sk
+FROM customer AS customer;
+CREATE OR REPLACE VIEW E4 AS SELECT catalog_sales.cs_bill_addr_sk AS E4_cs_bill_addr_sk,catalog_sales.cs_warehouse_sk AS E4_cs_warehouse_sk
+FROM catalog_sales AS catalog_sales;
+CREATE OR REPLACE VIEW E1 AS SELECT web_sales.ws_bill_customer_sk AS E1_ws_bill_customer_sk,web_sales.ws_quantity AS E1_ws_quantity
+FROM web_sales AS web_sales;
+CREATE OR REPLACE VIEW E3 AS SELECT customer_address.ca_address_sk AS E3_ca_address_sk
+FROM customer_address AS customer_address;
+CREATE OR REPLACE VIEW E1E5 AS SELECT E1_ws_bill_customer_sk, E1_ws_quantity, E5_w_warehouse_sk FROM E1, E5 WHERE E1_ws_quantity = E5_w_warehouse_sq_ft;
+CREATE OR REPLACE VIEW E2E4 AS SELECT E4_cs_bill_addr_sk, E4_cs_warehouse_sk, E2_c_customer_sk FROM E4, E2 WHERE E4_cs_bill_addr_sk = E2_c_current_addr_sk;
+CREATE UNLOGGED TABLE E2E4_stage1_1 AS SELECT * FROM E2E4 WHERE EXISTS (SELECT 1 FROM E3 WHERE E2E4.E4_cs_bill_addr_sk=E3.E3_ca_address_sk);
+CREATE UNLOGGED TABLE E2E4_stage1_final AS SELECT * FROM E2E4_stage1_1 WHERE EXISTS (SELECT 1 FROM E3 WHERE E2E4_stage1_1.E4_cs_bill_addr_sk=E3.E3_ca_address_sk);
+CREATE UNLOGGED TABLE E1E5_stage1_final AS SELECT MIN(E1_ws_bill_customer_sk) AS EXPR$0 FROM E1E5 WHERE EXISTS (SELECT 1 FROM E2E4_stage1_final WHERE E1E5.E1_ws_bill_customer_sk=E2E4_stage1_final.E2_c_customer_sk AND E1E5.E5_w_warehouse_sk=E2E4_stage1_final.E4_cs_warehouse_sk);
+SELECT * FROM E1E5_stage1_final"
