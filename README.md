@@ -2,7 +2,7 @@
 Reproducibility Repository for "Soft and Constrained Hypertree Width"
 
 
-# How to Run Expeiments 
+## How to Run Expeiments 
 
 1) First Compile the Scala Query Rewriting library
 
