@@ -1,5 +1,7 @@
 # softhw-pods24
-Reproducibility Repository for "Soft and Constrained Hypertree Width"
+Reproducibility Repository for "Soft and Constrained Hypertree Width". 
+
+This repository contains, except for the publicly available benchmarks, everything that should be needed to reproduce the results of the paper "Soft and Constrained Hypertree Width".
 
 
 ## How to Run Experiments 
