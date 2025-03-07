@@ -1,5 +1,5 @@
 
-This repository contains, except for the publicly available benchmarks, everything that should be needed to reproduce the results of the paper "Soft and Constrained Hypertree Width".
+This repository contains, except for the publicly available benchmarks, everything that should be needed to reproduce the results of the paper "Soft and Constrained Hypertree Width" [1].
 
 
 ## How to Run Experiments 
@@ -14,3 +14,10 @@ This repository contains, except for the publicly available benchmarks, everythi
 
 3) Run the JupyterLab Notebook.
    Given steps 1 and 2, the notebook should run without issues. The location for the JAR file, and for each experiment the config data (database name, user and password) needs to be provided. We refer to the comments in the notebook on how to run it.
+
+
+## Reference
+[1] _Soft and Constrained Hypertree Width_  
+Matthias Lanzinger, Cem Okulmus, Reinhard Pichler, Alexander Selzer and Georg Gottlob  
+Accepted by ACM Principles of Database Systems (PODS) 2025.  
+Full paper: https://doi.org/10.48550/arXiv.2412.11669
