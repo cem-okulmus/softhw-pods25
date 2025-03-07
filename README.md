@@ -19,5 +19,5 @@ This repository contains, except for the publicly available benchmarks, everythi
 ## Reference
 [1] _Soft and Constrained Hypertree Width_  
 Matthias Lanzinger, Cem Okulmus, Reinhard Pichler, Alexander Selzer and Georg Gottlob  
-Accepted by ACM Principles of Database Systems (PODS) 2025.  
+Accepted by the ACM Symposium on Principles of Database Systems (PODS) 2025.  
 Full paper: https://doi.org/10.48550/arXiv.2412.11669
